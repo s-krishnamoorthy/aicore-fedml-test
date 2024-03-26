@@ -1,0 +1,31 @@
+apiVersion: ai.sap.com/v1alpha1
+kind: ServingTemplate
+metadata:
+  name: aicore-serve-executable # Executable ID (max length 64 lowercase-hyphen-separated), please modify this to any value if you are not the only user of your SAP AI Core instance. Example: `first-pipeline-1234`
+  annotations:
+    scenarios.ai.sap.com/description: "testing AI Core"
+    scenarios.ai.sap.com/name: "ai-core-test"
+    executables.ai.sap.com/description: "serving executable"
+    executables.ai.sap.com/name: "aicore-serve-executable"
+  labels:
+    scenarios.ai.sap.com/id: "learning"
+    ai.sap.com/version: "4.0"
+spec:
+  inputs:
+    artifacts:
+      - name: modelArtifact
+  template:
+    apiVersion: "serving.kubeflow.org/v1beta1"
+    metadata:
+      labels: |
+        ai.sap.com/resourcePlan: infer.s
+    spec: |
+      predictor:
+        imagePullSecrets:
+          - name: awssecretalex # gcpsecretalex #add the secret name here that you created in ai core
+        containers:
+        - name: kfserving-container
+          image: "321880606331.dkr.ecr.us-east-1.amazonaws.com/alex-test-image" # "gcr.io/sap-ti-ci-sce/gcp-ai-core:v3" #replace this
+          ports:
+            - containerPort: 8080 # 5060
+              protocol: TCP
